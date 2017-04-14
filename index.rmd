@@ -4,7 +4,7 @@ author: "alex filazzola & cjlortie"
 date: "June 2016"
 output:
   html_document:
-    theme: yeti
+    theme: spacelab
     toc: yes
     toc_depth: 3
     toc_float: yes
@@ -19,8 +19,7 @@ Ephedra californica effects are contrasted to Larrea tridentata.
 
 [ecoblender](http://ecoblender.org)
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r libraries & functions, echo=FALSE, warning=FALSE, message=FALSE}
 #load libraries ####
 library(dplyr)
 library(lme4)
@@ -31,52 +30,20 @@ library(MASS)
 library(vegan)
 
 ##load functions ####
+#error
 error.bar <- function(x, y, upper, lower=upper, length=0,...){
   if(length(x) != length(y) | length(y) !=length(lower) | length(lower) != length(upper))
     stop("vectors must be same length")
   arrows(x,y+upper, x, y-lower, angle=90, code=3, length=0, ...)
 }
+
+#se
 se <- function(x) sd(x)/sqrt(length(x)) ## SE
 
-
-```
-
-``` {r read data, echo=FALSE}
-#rii data first?
-data <- read.csv("data/shrub.contrast.survey.csv")
-
-
-data.ord <- read.table("data/shrub.contrast.ordination.csv", header=T,sep=",")
-```
-
-##load data
-```{r}
-#data for abundance and richness
-data=data
-data[is.na(data)] <- 0
-#data for ordinations: 2015 & 2016 only
-data.ord=data.ord
-data.ord[is.na(data.ord)] <- 0
-```
-## GLM for abundance/richness for shrub species, year and microsite
-```{r}
-m1 <- glm(abundance ~ year * Microsite * Region, data=data, family = poisson)
-summary(m1)
-```
-### Overdispersed. Residual deviance/DF >> 1
-``` {r}
-m1$deviance/m1$df.residual
-```
-## Negative binomial distribution
-``` {r}
-m1 <- glm.nb(abundance ~ year * Microsite * Region, data=data)
-anova(m1, test="Chisq")
-```
-
-## load functions for figures
-``` {r}
-se <- function(x) sqrt(var(x)/length(x)) #standard error
+#confidence intervals
 conf.95 <- function(x) se(x)*2 #95% confidence interval bars
+
+#rii function
 rii <- function(x, j, var)
 {
 s1 <- subset(x, Microsite == "Shrub", select=var)
@@ -87,15 +54,40 @@ return2 <- cbind(x1[j], return1)
 return2[is.na(return2)] <- 0
 return2
 }
+
 ```
 
-## calculate RII on dataset
-``` {r}
+###Data and meta-data
+Panoche sites = 1.1 is plateau, 1.2 is south, 1.3 is north.  
+Mojave sites = a total of five sites with each on Kelbaker Road corresponding to increasing elevations of 313, 515, 737,951, & 1128.   
+
+``` {r, data and wrangling, echo=TRUE, warning=FALSE, message=FALSE}
+#data wrangling####
+#primary data
+data <- read.csv("data/shrub.contrast.survey.csv")
+data.ord <- read.table("data/shrub.contrast.ordination.csv", header=T,sep=",")
+
+#data for abundance and richness
+data=data
+data[is.na(data)] <- 0
+#data for ordinations: 2015 & 2016 only
+data.ord=data.ord
+data.ord[is.na(data.ord)] <- 0
+
+#generate riis
 rii.dat <- rii(data, 1:8, c("abundance","richness")) #keep columns 1:8
-```
 
-##aggregate site
-``` {r warning=FALSE}
+##Parse by region and year
+dat.2015 <- subset(data.ord, year==2015) ##subset data for 2015
+pan.2015 <- subset(dat.2015, Region=="Panoche")
+dat.2016 <- subset(data.ord, year==2016)
+pan.2016 <- subset(dat.2016, Region=="Panoche")
+mnp.2015 <- subset(dat.2015, Region=="Mojave")
+mnp.2015 <- subset(mnp.2015, rowSums(mnp.2015[,11:41])>0) #remove empty plots for analysis
+mnp.2016 <- subset(dat.2016, Region=="Mojave")
+mnp.2016 <- subset(mnp.2016, rowSums(mnp.2016[,11:41])>0) #remove empty plots for analysis
+
+#aggregate sites####
 #site averages for each year
 means <- aggregate(rii.dat, by=list(region=rii.dat$Region, site=rii.dat$Site,year=rii.dat$year), mean)
 ses <- aggregate(rii.dat, by=list(region=rii.dat$Region, site=rii.dat$Site,year=rii.dat$year), conf.95)
@@ -103,9 +95,10 @@ ses <- aggregate(rii.dat, by=list(region=rii.dat$Region, site=rii.dat$Site,year=
 #grand means for each year
 grand.means <- aggregate(rii.dat, by=list(region=rii.dat$Region, site=rii.dat$Site,year=rii.dat$year), mean)
 grand.ses <- aggregate(rii.dat, by=list(region=rii.dat$Region, site=rii.dat$Site,year=rii.dat$year), conf.95)
+
 ```
 
-##plot figures
+###Data viz Rii
 ``` {r fig.width = 24, fig.height = 11, echo=FALSE}
 ##x-axis locations
 xax <- seq(1,8, by=c(1))
@@ -214,22 +207,7 @@ rect(0,grand.means[8,"richness"]-grand.ses[8,"richness"],3.5,grand.means[8,"rich
 rect(3.5,grand.means[7,"richness"]-grand.ses[7,"richness"],9,grand.means[7,"richness"]+grand.ses[7,"richness"],col="#80808030",border="transparent") #Mojave
 ```
 
-## ordinations for 2015 and 2016
-### subset the data 
-``` {r}
-##Separate region and year
-dat.2015 <- subset(data.ord, year==2015) ##subset data for 2015
-pan.2015 <- subset(dat.2015, Region=="Panoche")
-dat.2016 <- subset(data.ord, year==2016)
-pan.2016 <- subset(dat.2016, Region=="Panoche")
-mnp.2015 <- subset(dat.2015, Region=="Mojave")
-mnp.2015 <- subset(mnp.2015, rowSums(mnp.2015[,11:41])>0) #remove empty plots for analysis
-mnp.2016 <- subset(dat.2016, Region=="Mojave")
-mnp.2016 <- subset(mnp.2016, rowSums(mnp.2016[,11:41])>0) #remove empty plots for analysis
-```
-
-##plot ordinations
-
+###Data viz ordinations
 ```{r fig.width=9, fig.height=9, warning=FALSE, echo=FALSE}
 # 2x2 plot
 par(mfrow=c(2,2))
@@ -290,4 +268,16 @@ axis(4, 0, label="Mojave", cex.axis=1.8)
 abu <- colSums(mnp.2016.trans) #sum plots to prioritize species
 ordilabel(scores(dca2)*1.2, labels=ordi.lab,dis="sites") #expand site locations on plot
 ordilabel(dca2, col = "red", dis = "sp", priority = abu, cex=1.1) #plot species based on abundance
+```
+
+###Models
+```{r models, warning=FALSE, message=FALSE}
+#Primary data
+m1 <- glm(abundance ~ year * Microsite * Region, data=data, family = poisson)
+summary(m1)
+m1$deviance/m1$df.residual
+
+m1 <- glm.nb(abundance ~ year * Microsite * Region, data=data)
+anova(m1, test="Chisq")
+
 ```
