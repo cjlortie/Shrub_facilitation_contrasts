@@ -11,11 +11,17 @@ output:
   pdf_document:
     toc: yes
 ---
-###Shrub-plant interaction contrasts at the two extents of a distributed desert region
-The hypothesis tested is that positive effects are species specific.
-Ephedra californica effects are contrasted to Larrea tridentata.
+###A test of foundation plant facilitation specificity.
+The hypothesis tested is that foundation shrub positive effects are species specific.
+*Ephedra californica* effects are contrasted to those of *Larrea tridentata*.  
 
-![](./EC.JPG)
+
+**Panoche Hills Ecological Reserve**  
+![](./Panoche.JPG)  
+
+**Mojave National Preserve**  
+![](./MNP.JPG)  
+
 
 [ecoblender](http://ecoblender.org)
 
