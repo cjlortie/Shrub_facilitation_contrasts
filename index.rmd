@@ -89,3 +89,10 @@ ggplot(climate, aes(Site.name, Aridity, color = Region)) +
   scale_x_discrete(labels = c("Mojave 1", "Mojave 2", "Mojave 3", "Mojave 4", "Mojave 5", "Panoche 1", "Panoche 2", "Panoche 3")) + labs(x = "sites", y = "long-term aridity")
 
 ```
+
+###Data viz
+```{r, rii, warning=FALSE, message=FALSE}
+#shrub sizes
+ggplot(foundation.rii, aes(Year, Volume, fill = Region)) + geom_boxplot() + ylab("shrub volumes (m^3)") + 
+scale_fill_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + theme(legend.title=element_blank())
+```
