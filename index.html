@@ -235,6 +235,85 @@ Deserts globally are subject to significant anthropogenic pressure. Global chang
 <p><strong>The simplified hypothesis tested is that foundation shrub effects are species specific.</strong> The importance of local gradients are also examined and cursorily framed within larger climate data.</p>
 <p><em>Ephedra californica</em> effects are contrasted to those of <em>Larrea tridentata</em> in two different desert sites at the upper and lower extents of the San Joaquin Desert Region.<br />
 The cacti species <em>Cylindropuntia acanthocarpa</em> is also explored in brief for a presentation at CNPS.</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## Loading tidyverse: ggplot2
+## Loading tidyverse: tibble
+## Loading tidyverse: tidyr
+## Loading tidyverse: readr
+## Loading tidyverse: purrr
+## Loading tidyverse: dplyr</code></pre>
+<pre><code>## Conflicts with tidy packages ----------------------------------------------</code></pre>
+<pre><code>## filter(): dplyr, stats
+## lag():    dplyr, stats</code></pre>
+<pre class="r"><code>metadata &lt;- read_csv(&quot;data/meta-data.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   attribute = col_character(),
+##   description = col_character()
+## )</code></pre>
+<pre class="r"><code>knitr::kable(metadata)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">attribute</th>
+<th align="left">description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">x</td>
+<td align="left">x1 - was measured as the longest diameter of the shrub plant</td>
+</tr>
+<tr class="even">
+<td align="left">x</td>
+<td align="left">x2 - was the diameter directly perpendicular to diameter x1</td>
+</tr>
+<tr class="odd">
+<td align="left">h</td>
+<td align="left">h - was measured as the tallest branch with leaves</td>
+</tr>
+<tr class="even">
+<td align="left">methods</td>
+<td align="left">Quadrat sampling was conducted with a 50 cm X 50 cm quadrat construction from white PVC pipe</td>
+</tr>
+<tr class="odd">
+<td align="left">methods</td>
+<td align="left">Shrubs for each site were chosen within ten meters of one another in a generally linear pattern</td>
+</tr>
+<tr class="even">
+<td align="left">methods</td>
+<td align="left">Open plots were placed approximately two meters from the shrub exterior</td>
+</tr>
+<tr class="odd">
+<td align="left">methods</td>
+<td align="left">Quadrats were placed close to the base of the shrub plant such that it was underneath as much of shrub cover as possible.</td>
+</tr>
+<tr class="even">
+<td align="left">methods</td>
+<td align="left">Two soil cores 5 cm in depth were taken at all shrub/open pairs and place into separate coin envelopes.</td>
+</tr>
+<tr class="odd">
+<td align="left">methods</td>
+<td align="left">Shrub cores were taken close to shrub base and open cores were taken in center.</td>
+</tr>
+<tr class="even">
+<td align="left"># sp</td>
+<td align="left">Plant species were delineated during the first sampling event by visually obvious differences</td>
+</tr>
+<tr class="odd">
+<td align="left">total seed mass</td>
+<td align="left">mass of seeds/mass of sand</td>
+</tr>
+<tr class="even">
+<td align="left">2013 census</td>
+<td align="left">1 = Jan 20, 2 = Feb 20</td>
+</tr>
+<tr class="odd">
+<td align="left">2014 census</td>
+<td align="left">3 = Mar 25, 28</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 

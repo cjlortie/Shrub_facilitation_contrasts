@@ -37,3 +37,9 @@ Mojave sites = a total of five sites with each on Kelbaker Road corresponding to
 *Ephedra californica* effects are contrasted to those of *Larrea tridentata* in two different desert sites at the upper and lower extents of the San Joaquin Desert Region.  
 The cacti species *Cylindropuntia acanthocarpa* is also explored in brief for a presentation at CNPS.
 
+```{r, data setup}
+library(tidyverse)
+metadata <- read_csv("data/meta-data.csv")
+knitr::kable(metadata)
+
+```
