@@ -37,9 +37,37 @@ Mojave sites = a total of five sites with each on Kelbaker Road corresponding to
 *Ephedra californica* effects are contrasted to those of *Larrea tridentata* in two different desert sites at the upper and lower extents of the San Joaquin Desert Region.  
 The cacti species *Cylindropuntia acanthocarpa* is also explored in brief for a presentation at CNPS.
 
-```{r, data setup}
+```{r, data setup, warning=FALSE, message=FALSE}
 library(tidyverse)
+#meta-data in brief for field sampling
 metadata <- read_csv("data/meta-data.csv")
 knitr::kable(metadata)
+
+#effect-size estimates
+foundation.rii <- read_csv("data/shrub.rii.contrast.csv")
+foundation.rii
+foundation.rii <- foundation.rii %>% mutate(Volume = ((D1 + D2)/2)^3*3.14*(1/3))
+foundation.rii$Year <- as.character(foundation.rii$Year)
+foundation.rii$Site <- as.character(foundation.rii$Site)
+
+#sites for shrub-shrub contrast
+sites <- read_csv("data/sites.csv")
+sites$Site <- as.character(sites$Site)
+sites
+
+
+#basic climate
+climate <- read_csv("data/shrub.contrast.climate.csv")
+climate$Site <- as.character(climate$Site)
+
+```
+
+###Map
+```{r, map, warning=FALSE, message=FALSE}
+require(ggmap)
+cali <- get_map(location = c(lon = -118, lat = 35), zoom = 7)
+#cali <-get_googlemap("california", crop= FALSE, zoom = 10)
+p <-ggmap(cali)
+p + geom_point(data=sites, aes(x=Long, y=Lat), alpha = 0.75, size = 1.5) + labs(x ="longitude", y = "latitude")
 
 ```
