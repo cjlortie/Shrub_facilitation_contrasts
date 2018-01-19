@@ -71,3 +71,4 @@ p <-ggmap(cali)
 p + geom_point(data=sites, aes(x=Long, y=Lat), alpha = 0.75, size = 1.5) + labs(x ="longitude", y = "latitude")
 
 ```
+
