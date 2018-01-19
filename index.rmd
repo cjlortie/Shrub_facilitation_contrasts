@@ -57,6 +57,13 @@ sites
 
 
 #basic climate
+#Worldclim
+#Bio_1: annual temperature
+#Bio_8: temperature in the wettest quarter
+#Bio_12: annual precipitation
+#Bio_15: precipitation seasonality (CV)
+#Bio_16: precipitation wettest quarter
+
 climate <- read_csv("data/shrub.contrast.climate.csv")
 climate$Site <- as.character(climate$Site)
 
@@ -68,7 +75,17 @@ require(ggmap)
 cali <- get_map(location = c(lon = -118, lat = 35), zoom = 7)
 #cali <-get_googlemap("california", crop= FALSE, zoom = 10)
 p <-ggmap(cali)
-p + geom_point(data=sites, aes(x=Long, y=Lat), alpha = 0.75, size = 1.5) + labs(x ="longitude", y = "latitude")
+p + geom_point(data=sites, aes(x=Long, y=Lat), alpha = 0.5, size = 4) + labs(x ="longitude", y = "latitude")
+
 
 ```
 
+###Climate
+```{r, simple climate, warning=FALSE, message=FALSE}
+ggplot(climate, aes(Site.name, Aridity, color = Region)) + 
+  geom_point(size = 4) + 
+  scale_color_manual(values = c("royalblue4", "orangered2")) +
+  guides(color=FALSE) +
+  scale_x_discrete(labels = c("Mojave 1", "Mojave 2", "Mojave 3", "Mojave 4", "Mojave 5", "Panoche 1", "Panoche 2", "Panoche 3")) + labs(x = "sites", y = "long-term aridity")
+
+```
