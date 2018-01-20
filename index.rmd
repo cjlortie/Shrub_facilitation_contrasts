@@ -63,6 +63,8 @@ sites
 #Bio_12: annual precipitation
 #Bio_15: precipitation seasonality (CV)
 #Bio_16: precipitation wettest quarter
+#means aggregated from 1960-1990
+#aridity is the De Martonne index with 0-10 classified as arid and lower values denote relatively more arid systems
 
 climate <- read_csv("data/shrub.contrast.climate.csv")
 climate$Site <- as.character(climate$Site)
@@ -148,6 +150,28 @@ ggplot(rii.climate, aes(Aridity, Richness, color = Region)) +
   geom_smooth(method = lm) + scale_color_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + facet_wrap(~Year) + theme(legend.title=element_blank()) +
   labs(x = "long-term aridity", y = "Rii richness")
 
+```
 
+###Models
+```{r, main models, warning=FALSE, message=FALSE}
+#random effects model with year####
+require(lmerTest)
+#morphometrics####
+m <- lmer(Volume~(1|Year)*Site.name, data = rii.climate)
+#summary(m)
+anova(m)
+rand(m) #to get p-values for random effects
+#lsmeansLT(m)
 
+#models for different between years
+#effects####
+m <- lmer(Abundance~(1|Year)*Site.name + Volume, data = rii.climate)
+#summary(m)
+anova(m, test = "Chisq")
+rand(m) 
+
+m <- lmer(Richness~(1|Year)*Site.name + Volume, data = rii.climate)
+#summary(m)
+anova(m, test = "Chisq")
+rand(m) 
 ```
