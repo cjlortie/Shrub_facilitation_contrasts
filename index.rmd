@@ -46,13 +46,13 @@ knitr::kable(metadata)
 #effect-size estimates####
 foundation.rii <- read_csv("data/shrub.rii.contrast.csv")
 foundation.rii
-foundation.rii <- foundation.rii %>% mutate(Volume = ((D1 + D2)/2)^3*3.14*(1/3))
-foundation.rii$Year <- as.character(foundation.rii$Year)
-foundation.rii$Site <- as.character(foundation.rii$Site)
+foundation.rii <- foundation.rii %>% mutate(volume = ((D1 + D2)/2)^3*3.14*(1/3))
+foundation.rii$year <- as.character(foundation.rii$year)
+foundation.rii$site <- as.character(foundation.rii$site)
 
 #sites for shrub-shrub contrast####
 sites <- read_csv("data/sites.csv")
-sites$Site <- as.character(sites$Site)
+sites$site <- as.character(sites$site)
 sites
 
 
@@ -67,12 +67,13 @@ sites
 #aridity is the De Martonne index with 0-10 classified as arid and lower values denote relatively more arid systems
 
 climate <- read_csv("data/shrub.contrast.climate.csv")
-climate$Site <- as.character(climate$Site)
+climate$site <- as.character(climate$site)
 
 #join climate with rii####
 simple.climate <- climate %>%
-  select(Site, bio_1, bio_12, Aridity)
-rii.climate <- left_join(foundation.rii, simple.climate, by = "Site")
+  select(site, bio_1, bio_12, aridity)
+
+foundation.rii <- left_join(foundation.rii, simple.climate, by = "site")
 
 ```
 
@@ -83,7 +84,7 @@ require(ggmap)
 cali <- get_map(location = c(lon = -118, lat = 35), zoom = 7)
 #cali <-get_googlemap("california", crop= FALSE, zoom = 10)
 p <-ggmap(cali)
-p + geom_point(data=sites, aes(x=Long, y=Lat), alpha = 0.5, size = 4) + labs(x ="longitude", y = "latitude")
+p + geom_point(data=sites, aes(x=long, y=lat), alpha = 0.5, size = 4) + labs(x ="longitude", y = "latitude")
 
 
 ```
@@ -91,20 +92,20 @@ p + geom_point(data=sites, aes(x=Long, y=Lat), alpha = 0.5, size = 4) + labs(x =
 ###Climate
 ```{r, simple climate, warning=FALSE, message=FALSE}
 #aridity####
-ggplot(climate, aes(Site.name, Aridity, color = Region)) + 
+ggplot(climate, aes(site.name, aridity, color = region)) + 
   geom_point(size = 4) + 
   scale_color_manual(values = c("orangered2", "royalblue4")) +
   guides(color=FALSE) +
   scale_x_discrete(labels = c("Mojave 1", "Mojave 2", "Mojave 3", "Mojave 4", "Mojave 5", "Panoche 1", "Panoche 2", "Panoche 3")) + labs(x = "sites", y = "long-term aridity") + ylim(0,3)
 
 #temp & precip####
-ggplot(climate, aes(Site.name, bio_1, color = Region)) + 
+ggplot(climate, aes(site.name, bio_1, color = region)) + 
   geom_point(size = 4) +
   guides(color=FALSE) +
   scale_x_discrete(labels = c("Mojave 1", "Mojave 2", "Mojave 3", "Mojave 4", "Mojave 5", "Panoche 1", "Panoche 2", "Panoche 3")) + labs(x = "sites", y = "long-term temperature (C)") + 
   scale_color_manual(values = c("orangered2", "royalblue4"))
 
-ggplot(climate, aes(Site.name, bio_12, color = Region)) + 
+ggplot(climate, aes(site.name, bio_12, color = region)) + 
   geom_point(size = 4) +
   guides(color=FALSE) +
   scale_x_discrete(labels = c("Mojave 1", "Mojave 2", "Mojave 3", "Mojave 4", "Mojave 5", "Panoche 1", "Panoche 2", "Panoche 3")) + labs(x = "sites", y = "long-term precipitation (mm)") + 
@@ -115,39 +116,55 @@ ggplot(climate, aes(Site.name, bio_12, color = Region)) +
 ###Data viz
 ```{r, rii, warning=FALSE, message=FALSE}
 #shrub sizes####
-ggplot(foundation.rii, aes(Year, Volume, fill = Region)) + geom_boxplot() + ylab("shrub volumes (m^3)") + 
+ggplot(foundation.rii, aes(year, volume, fill = region)) + geom_boxplot() + ylab("shrub volumes (m^3)") + 
 scale_fill_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + theme(legend.title=element_blank())
 
-ggplot(foundation.rii, aes(Volume, fill = Region)) + geom_density(kernel = "gaussian", alpha = .5) + scale_fill_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + xlab("shrub volumes (m^3)") + theme(legend.title=element_blank())
+ggplot(foundation.rii, aes(volume, fill = region)) + geom_density(kernel = "gaussian", alpha = .5) + scale_fill_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + xlab("shrub volumes (m^3)") + theme(legend.title=element_blank())
 
-ggplot(foundation.rii, aes(Volume, fill = Region)) + geom_density(kernel = "gaussian", alpha = .5) + scale_fill_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + xlab("shrub volumes (m^3)") + theme(legend.title=element_blank()) + facet_wrap(~Year)
+ggplot(foundation.rii, aes(volume, fill = region)) + geom_density(kernel = "gaussian", alpha = .5) + scale_fill_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + xlab("shrub volumes (m^3)") + theme(legend.title=element_blank()) + facet_wrap(~year)
 
 #general shrub effects####
-ggplot(foundation.rii, aes(Year, Abundance, fill = Region)) + geom_boxplot() + ylab("Rii abundance") + scale_fill_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + xlab("year") + theme(legend.title=element_blank())
+ggplot(foundation.rii, aes(year, abundance, fill = region)) + 
+  geom_boxplot() + 
+  ylab("Rii abundance") + scale_fill_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + 
+  xlab("year") + 
+  theme(legend.title=element_blank())
 
-ggplot(foundation.rii, aes(Year, Richness, fill = Region)) + geom_boxplot() + ylab("Rii richness") + scale_fill_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + xlab("year") + theme(legend.title=element_blank())
+ggplot(foundation.rii, aes(year, richness, fill = region)) + 
+  geom_boxplot() + 
+  ylab("Rii richness") + 
+  scale_fill_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + 
+  xlab("year") + 
+  theme(legend.title=element_blank())
 
 #notes: consider weighting by significant covariates in plots above and also this is the mean effect - ie intensity that is not related to the frequency, ie how often you see it so use density plots too.
 
 #Covariates####
-ggplot(foundation.rii, aes(Volume, Abundance, color = Region)) + 
+#shrub sizes####
+ggplot(foundation.rii, aes(volume, abundance, color = region)) + 
   geom_point() + 
-  geom_smooth(method = lm) + scale_color_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + facet_wrap(~Year) + theme(legend.title=element_blank()) +
+  geom_smooth(method = lm) + 
+  scale_color_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + 
+  facet_wrap(~year) + theme(legend.title=element_blank()) +
   labs(x = "shrub volumes (m^3)", y = "Rii abundance")
 
-ggplot(foundation.rii, aes(Volume, Richness, color = Region)) + 
+ggplot(foundation.rii, aes(volume, richness, color = region)) + 
   geom_point() + 
-  geom_smooth(method = lm) + scale_color_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + facet_wrap(~Year) + theme(legend.title=element_blank()) +
+  geom_smooth(method = lm) + 
+  scale_color_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + 
+  facet_wrap(~year) + 
+  theme(legend.title=element_blank()) +
   labs(x = "shrub volumes (m^3)", y = "Rii richness")
 
-ggplot(rii.climate, aes(Aridity, Abundance, color = Region)) + 
+#simplied climate####
+ggplot(rii.climate, aes(aridity, abundance, color = region)) + 
   geom_point() + 
-  geom_smooth(method = lm) + scale_color_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + facet_wrap(~Year) + theme(legend.title=element_blank()) +
+  geom_smooth(method = lm) + scale_color_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + facet_wrap(~year) + theme(legend.title=element_blank()) +
   labs(x = "long-term aridity", y = "Rii abundance")
 
-ggplot(rii.climate, aes(Aridity, Richness, color = Region)) + 
+ggplot(rii.climate, aes(aridity, richness, color = region)) + 
   geom_point() + 
-  geom_smooth(method = lm) + scale_color_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + facet_wrap(~Year) + theme(legend.title=element_blank()) +
+  geom_smooth(method = lm) + scale_color_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + facet_wrap(~year) + theme(legend.title=element_blank()) +
   labs(x = "long-term aridity", y = "Rii richness")
 
 ```
@@ -157,11 +174,12 @@ ggplot(rii.climate, aes(Aridity, Richness, color = Region)) +
 #random effects model with year####
 require(lmerTest)
 #morphometrics####
-m <- lmer(Volume~(1|Year)*Site.name, data = rii.climate)
+m <- lmer(volume~(1|year)*site.name, data = foundation.rii)
 #summary(m)
 anova(m)
 rand(m) #to get p-values for random effects
 #lsmeansLT(m)
+difflsmeans(m, test.effs="site.name:year")
 
 #models for different between years
 #effects####
