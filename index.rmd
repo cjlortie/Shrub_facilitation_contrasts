@@ -86,19 +86,17 @@ rii.climate <- left_join(rii.climate, simple.climate, by = "site")
 cacti <- read_csv("data/cacti.rii.csv")
 cacti$plant.id <- as.character(cacti$plant.id)
 cacti$year <- as.character(cacti$year)
-cacti.simp <- cacti %>% select(species, year, rii.richness)
-
+cacti <- cacti %>% select(species, year, cover, richness) %>% rename("abundance" = "cover") #treat cover as analog for abundance because it is an effect size measure for relative difference in a similar measure
 
 #shrub-cacti contrast
-shrubs.2017 <- foundation.rii %>% filter(year == 2017)
+shrubs <- foundation.rii %>% filter(year == 2017)
 names <- sites %>% select(site.name, species)
-  
-shrubs.2017 <- left_join(shrubs.2017, names)
+shrubs <- left_join(shrubs, names)
 
-shrubs.2017 <- shrubs.2017 %>% rename("rii.richness" = "richness") %>%
-  select(year, species, rii.richness)
+shrubs <- shrubs %>% 
+  select(year, species, abundance, richness)
 
-foundationspecies <- dplyr::bind_rows(shrubs.2017, cacti.simp)
+foundationspecies <- dplyr::bind_rows(shrubs, cacti)
 
 ```
 
@@ -218,4 +216,22 @@ m <- lmer(richness~(1|year)*site.name + volume, data = foundation.rii)
 #summary(m)
 anova(m, test = "Chisq")
 rand(m) 
+```
+
+###Cacti curiosity
+```{r, cacti, warning=FALSE, message=FALSE}
+ggplot(foundationspecies, aes(species, abundance, fill = species)) +
+  geom_boxplot() + 
+  ylab("Rii abundance in 2017") + 
+  scale_fill_brewer(palette = "Greens") + 
+  xlab("foundation species") + 
+  theme(legend.position = "none")
+
+ggplot(foundationspecies, aes(species, richness, fill = species)) +
+  geom_boxplot() + 
+  ylab("Rii richness in 2017") + 
+  scale_fill_brewer(palette = "Greens") + 
+  xlab("foundation species") + 
+  theme(legend.position = "none")
+  
 ```
