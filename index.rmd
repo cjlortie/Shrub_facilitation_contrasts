@@ -109,7 +109,6 @@ cali <- get_map(location = c(lon = -118, lat = 35), zoom = 7)
 p <-ggmap(cali)
 p + geom_point(data=sites, aes(x=long, y=lat), alpha = 0.5, size = 4) + labs(x ="longitude", y = "latitude")
 
-
 ```
 
 ###Climate
@@ -121,6 +120,14 @@ ggplot(climate, aes(site.name, aridity, color = region)) +
   guides(color=FALSE) +
   scale_x_discrete(labels = c("Mojave 1", "Mojave 2", "Mojave 3", "Mojave 4", "Mojave 5", "Panoche 1", "Panoche 2", "Panoche 3")) + labs(x = "sites", y = "long-term aridity") + ylim(0,3)
 
+ggplot(climate, aes(as.numeric(site), aridity, color = region)) +
+  geom_line(size = 3) + 
+  scale_color_manual(values = c("orangered2", "royalblue4")) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(), legend.title=element_blank()) +
+  scale_y_continuous(limits = c(0, 10), breaks = c(0,5,10))
+
 #temp & precip####
 ggplot(climate, aes(site.name, bio_1, color = region)) + 
   geom_point(size = 4) +
@@ -128,11 +135,37 @@ ggplot(climate, aes(site.name, bio_1, color = region)) +
   scale_x_discrete(labels = c("Mojave 1", "Mojave 2", "Mojave 3", "Mojave 4", "Mojave 5", "Panoche 1", "Panoche 2", "Panoche 3")) + labs(x = "sites", y = "long-term temperature (C)") + 
   scale_color_manual(values = c("orangered2", "royalblue4"))
 
+ggplot(climate, aes(as.numeric(site), bio_1, color = region)) +
+  geom_line(size = 3) + 
+  scale_color_manual(values = c("orangered2", "royalblue4")) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(), legend.title=element_blank()) + labs(x = "", y = "long-term temperature (C)")
+
 ggplot(climate, aes(site.name, bio_12, color = region)) + 
   geom_point(size = 4) +
   guides(color=FALSE) +
   scale_x_discrete(labels = c("Mojave 1", "Mojave 2", "Mojave 3", "Mojave 4", "Mojave 5", "Panoche 1", "Panoche 2", "Panoche 3")) + labs(x = "sites", y = "long-term precipitation (mm)") + 
   scale_color_manual(values = c("orangered2", "royalblue4"))
+
+ggplot(climate, aes(as.numeric(site), bio_12, color = region)) +
+  geom_line(size = 3) + 
+  scale_color_manual(values = c("orangered2", "royalblue4")) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(), legend.title=element_blank()) + labs(x = "", y = "long-term precipitation (mm)")
+
+#temp-precip
+ggplot(climate, aes(bio_1, bio_12, color = region)) +
+  geom_line(size = 3) + 
+  scale_color_manual(values = c("orangered2", "royalblue4")) +
+  theme(legend.title=element_blank())
+
+ggplot(climate, aes(bio_1, bio_12, color = region)) +
+  geom_point(size = 3) + 
+ scale_color_manual(values = c("orangered2", "royalblue4")) +
+  theme(legend.title=element_blank()) +
+  labs(x = "long-term temperature (C)", y = "long-term precipitation (mm)")
 
 ```
 
@@ -225,13 +258,15 @@ ggplot(foundationspecies, aes(species, abundance, fill = species)) +
   ylab("Rii abundance in 2017") + 
   scale_fill_brewer(palette = "Greens") + 
   xlab("foundation species") + 
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  ylim(-1,1)
 
 ggplot(foundationspecies, aes(species, richness, fill = species)) +
   geom_boxplot() + 
   ylab("Rii richness in 2017") + 
   scale_fill_brewer(palette = "Greens") + 
   xlab("foundation species") + 
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  ylim(-1,1)
   
 ```
