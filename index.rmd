@@ -75,6 +75,20 @@ simple.climate <- climate %>%
 
 foundation.rii <- left_join(foundation.rii, simple.climate, by = "site")
 
+#however, likely better to match rii to site level means given climate estimates are also at the site level and not shrub level
+rii.climate <- foundation.rii %>% 
+  group_by(year, region, site, site.name) %>% 
+  summarise(mean.richness = mean(richness), mean.abundance = mean(abundance)) 
+
+rii.climate <- left_join(rii.climate, simple.climate, by = "site")
+
+#cacti curiosity
+cacti <- read_csv("data/cacti.rii.csv")
+cacti$plant.id <- as.character(cacti$plant.id)
+
+#shrub-cacti contrast
+
+
 ```
 
 ###Map
@@ -157,14 +171,14 @@ ggplot(foundation.rii, aes(volume, richness, color = region)) +
   labs(x = "shrub volumes (m^3)", y = "Rii richness")
 
 #simplied climate####
-ggplot(rii.climate, aes(aridity, abundance, color = region)) + 
+ggplot(rii.climate, aes(aridity, mean.abundance, color = region)) + 
   geom_point() + 
-  geom_smooth(method = lm) + scale_color_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + facet_wrap(~year) + theme(legend.title=element_blank()) +
+  geom_smooth(method = lm, se = FALSE) + scale_color_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + facet_wrap(~year) + theme(legend.title=element_blank()) +
   labs(x = "long-term aridity", y = "Rii abundance")
 
-ggplot(rii.climate, aes(aridity, richness, color = region)) + 
+ggplot(rii.climate, aes(aridity, mean.richness, color = region)) + 
   geom_point() + 
-  geom_smooth(method = lm) + scale_color_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + facet_wrap(~year) + theme(legend.title=element_blank()) +
+  geom_smooth(method = lm, se = FALSE) + scale_color_brewer(palette = "Greens", labels = c("Larrea", "Ephedra")) + facet_wrap(~year) + theme(legend.title=element_blank()) +
   labs(x = "long-term aridity", y = "Rii richness")
 
 ```
@@ -179,16 +193,17 @@ m <- lmer(volume~(1|year)*site.name, data = foundation.rii)
 anova(m)
 rand(m) #to get p-values for random effects
 #lsmeansLT(m)
-difflsmeans(m, test.effs="site.name:year")
+#difflsmeans(m, test.effs="site.name")
+
 
 #models for different between years
 #effects####
-m <- lmer(Abundance~(1|Year)*Site.name + Volume, data = rii.climate)
+m <- lmer(abundance~(1|year)*site.name + volume, data = foundation.rii)
 #summary(m)
 anova(m, test = "Chisq")
 rand(m) 
 
-m <- lmer(Richness~(1|Year)*Site.name + Volume, data = rii.climate)
+m <- lmer(richness~(1|year)*site.name + volume, data = foundation.rii)
 #summary(m)
 anova(m, test = "Chisq")
 rand(m) 
