@@ -82,12 +82,23 @@ rii.climate <- foundation.rii %>%
 
 rii.climate <- left_join(rii.climate, simple.climate, by = "site")
 
-#cacti curiosity
+#cacti curiosity####
 cacti <- read_csv("data/cacti.rii.csv")
 cacti$plant.id <- as.character(cacti$plant.id)
+cacti$year <- as.character(cacti$year)
+cacti.simp <- cacti %>% select(species, year, rii.richness)
+
 
 #shrub-cacti contrast
+shrubs.2017 <- foundation.rii %>% filter(year == 2017)
+names <- sites %>% select(site.name, species)
+  
+shrubs.2017 <- left_join(shrubs.2017, names)
 
+shrubs.2017 <- shrubs.2017 %>% rename("rii.richness" = "richness") %>%
+  select(year, species, rii.richness)
+
+foundationspecies <- dplyr::bind_rows(shrubs.2017, cacti.simp)
 
 ```
 
